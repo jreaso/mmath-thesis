@@ -1,0 +1,14 @@
+# R and R Studio
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Mac
+.DS_Store
+._*
+
+# Logs and other runtimes
+*.log
+*.aux
+*.out
