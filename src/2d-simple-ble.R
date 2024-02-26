@@ -23,7 +23,7 @@ f <- function(X){
 
 
 ### Plotting
-n_seq <- 101
+n_seq <- 201
 x_seq <- seq(0,1, len=n_seq)
 xP <- as.matrix(expand.grid(x_seq, x_seq))
 
@@ -69,7 +69,7 @@ filled.contour(x=x_seq, y=x_seq, z=var_mat, color.palette=var_cols, levels=seq(0
                })
 
 # Emulator sd plot
-sd_mat <- sqrt(var_mat)
+sd_mat <- sqrt(abs(var_mat)) # abs taken to avoid NaNs from error with decimal numbers close to 0
 filled.contour(x=x_seq, y=x_seq, z=sd_mat, color.palette=var_cols, levels=seq(0,0.3,0.025),
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
@@ -85,3 +85,4 @@ filled.contour(x=x_seq, y=x_seq, z=diag_mat, color.palette=diag_cols, levels=seq
                  points_plot(xD)
                })
 dev.off()
+
