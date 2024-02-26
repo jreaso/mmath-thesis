@@ -58,7 +58,6 @@ filled.contour(x=x_seq, y=x_seq, z=exp_mat, color.palette=surf_cols, level=seq(-
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
                  contour(x_seq, x_seq, exp_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
-                 points_plot(xD)
                })
 
 # Emulator variance plot
