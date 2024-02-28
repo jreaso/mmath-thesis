@@ -100,3 +100,9 @@ image(x_seq, x_seq, z_se, col=cpal(20), axes=T, ylab="", xlab="", xlim=c(0,1), y
 image(x_seq, x_seq, z_matern, col=cpal(20), axes=T, ylab="", xlab="", xlim=c(0,1), ylim=c(0,1)); box()
 image(x_seq, x_seq, z_exp, col=cpal(100), axes=T, ylab="", xlab="", xlim=c(0,1), ylim=c(0,1)); box()
 dev.off()
+
+
+# Save 2D samples to save recomputing
+save(z_se, file="data/covariance-structures/2d_se_mat.RData")
+save(z_matern, file="data/covariance-structures/2d_matern_mat.RData")
+save(z_exp, file="data/covariance-structures/2d_exp_mat.RData")
