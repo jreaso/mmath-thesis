@@ -3,7 +3,7 @@
 
 library(pdist)
 
-simple_BL_emulator <- function(xD, D, xP, theta=1, sig=1, nugget=0.00001, mu=0, just_var=TRUE){
+simple_BL_emulator <- function(xD, D, xP, theta=1, sig=1, nugget=1e-3, mu=0, just_var=TRUE){
   n <- length(D); nP <- nrow(xP)
   xD <- t(t(xD)/theta); xP <- t(t(xP)/theta)
   
