@@ -60,21 +60,21 @@ filled.contour(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-
 dev.off()
 
 # 2D contour plot with geodesic lines
-pdf(file="figures/disc1-true-2d-geodesic.pdf", width=7, height=6)
-par(mar-c(4,4,2,4))
-filled.contour(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-1, 1, 0.1),
-               xlab=axis_labels[1], ylab=axis_labels[2],
-               plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, fP_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
-                 discontinuity_plot()
-                 
-                 # Geodesic
-                 lines(x=c(0.4, 0.5, 0.65), y=c(0.05, 0.5, 0.2), col='white', lwd=3)
-                 lines(x=c(0.4, 0.65), y=c(0.05, 0.2), col='white', lwd=1.5, lty=2)
-                 points(x=c(0.4, 0.5, 0.65), y=c(0.05, 0.5, 0.2),
-                        col="black", pch=21, bg="black", cex=1.4)
-               })
-dev.off()
+#pdf(file="figures/disc1-true-2d-geodesic.pdf", width=7, height=6)
+#par(mar-c(4,4,2,4))
+#filled.contour(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-1, 1, 0.1),
+#               xlab=axis_labels[1], ylab=axis_labels[2],
+#               plot.axes={axis(1);axis(2)
+#                 contour(x_seq, x_seq, fP_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
+#                 discontinuity_plot()
+#                 
+#                 # Geodesic
+#                 lines(x=c(0.4, 0.5, 0.65), y=c(0.05, 0.5, 0.2), col='white', lwd=5)
+#                 lines(x=c(0.4, 0.65), y=c(0.05, 0.2), col='white', lwd=4, lty=2)
+#                 points(x=c(0.4, 0.5, 0.65), y=c(0.05, 0.5, 0.2),
+#                        col="black", pch=21, bg="black", cex=2)
+#               })
+#dev.off()
 
 # 3D plot
 n_seq <- 501; x_seq <- seq(0,1, len=n_seq)
@@ -123,6 +123,44 @@ png(filename="figures/disc1-standard-smooth-3d.png", width=6, height=6, units='i
           ltheta=20, lphi=50, zlab=axis_labels[3],
           lighting=list(ambient=0.5, diffuse=0.6, specular=0.3, exponent=20, sr=0, alpha=1), border=NA, lwd=2)
 dev.off()
+
+
+### Pseudo NS CS
+# Instead of building a NS CS, we build a function slightly which is f with a smoothed over discontinuity by using a sigmoid
+
+f_smooth <- function(X){
+  if (is.matrix(X)) {
+    x <- X[,1]; y <- X[,2]
+  } else {
+    x <- X[1]; y <- X[2]
+  }
+  
+  t <- (y < 0.5)*(y - 0.5)^2 * (2/(1 + exp(-100*(x-0.5))) - 1)
+  A1 <- exp(-10*((x-0.4)^2 + (y-0.7)^2))
+  A2 <- exp(-20*((x-0.9)^2 + (y-0.5)^2))
+  B <- cos(8*((x-0.5)^2 - y^2))
+  
+  Z <- t*5*(sin(3*x)^2 + x) + B/2 + 2*A1 + 2*A2
+  
+  return(-Z/3 + 0.35)
+}
+
+# 3D plot
+n_seq <- 1001; x_seq <- seq(0,1, len=n_seq)
+xP <- as.matrix(expand.grid(x_seq, x_seq))
+fsP <- f_smooth(xP); fsP_mat <- matrix(fsP, nrow=n_seq, ncol=n_seq)
+x_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=FALSE)
+y_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=TRUE)
+
+png(filename="figures/disc1-pseudo-nscs-3d.png", width=6, height=6, units='in', res=600, bg="transparent")
+par(mar=c(2,2,2,2))
+persp3D(x_seq, x_seq, fsP_mat,
+        theta=25, phi=25, expand=0.6, colkey=FALSE, col=plasma(100), shade=1, facets=F,
+        ltheta=20, lphi=50, zlab=axis_labels[3],
+        lighting=list(ambient=0.5, diffuse=0.6, specular=0.3, exponent=20, sr=0, alpha=1), border=NA, lwd=2)
+dev.off()
+
+
 
 
 ### INCOMPLETE - need to perform torn embedding emulation and TENSE emulation
