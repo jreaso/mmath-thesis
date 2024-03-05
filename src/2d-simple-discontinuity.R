@@ -162,5 +162,131 @@ dev.off()
 
 
 
+### ===================================
+### Stationary Torn Embedding Emulation
+### ===================================
 
-### INCOMPLETE - need to perform torn embedding emulation and TENSE emulation
+
+# Embedding surface
+v <- function(X){
+  if (is.matrix(X)) {
+    x <- X[,1]; y <- X[,2]
+  } else {
+    x <- X[1]; y <- X[2]
+  }
+  (y < 0.5)*(y - 0.5)^2 * (2*(x < 0.5) - 1)
+}
+
+V <- function(X) cbind(X, v(X))
+
+
+# Plot embedding surface
+n_seq <- 501; x_seq <- seq(0,1, len=n_seq)
+xP <- as.matrix(expand.grid(x_seq, x_seq))
+x_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=FALSE)
+y_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=TRUE)
+
+vP <- v(xP)
+vP_mat <- matrix(vP, nrow=n_seq, ncol=n_seq)
+vP_mat[which(x_mat > 0.498 & x_mat < 0.502 & y_mat < 0.5)] <- NA
+
+
+png(filename="figures/disc1-embedding-surf-3d.png", width=6, height=6, units='in', res=600, bg="transparent")
+par(mar=c(2,2,2,2))
+persp3D(x_seq, x_seq, vP_mat,
+        theta=40, phi=20, expand=0.6, colkey=FALSE, col=magma(100), shade=1, facets=F,
+        ltheta=20, lphi=50, zlab="v(x,y)",
+        lighting=list(ambient=0.5, diffuse=0.6, specular=0.3, exponent=20, sr=0, alpha=1), border=NA, lwd=2)
+dev.off()
+
+
+# Design
+n2_seq <- 4
+x2_seq <- seq(0+1/(2*n2_seq), 1-1/(2*n2_seq), len=n2_seq)
+
+xD2 <- as.matrix(expand.grid(x2_seq, x2_seq))
+fD2 <- f(xD2)
+
+n_seq <- 101; x_seq <- seq(0,1, len=n_seq)
+xP <- as.matrix(expand.grid(x_seq, x_seq))
+x_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=FALSE)
+y_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=TRUE)
+
+
+# Embed in Higher Dimension
+xP_h <- V(xP)
+xD2_h <- V(xD2)
+
+
+# Torn Embedding Stationary Emulation
+BL_em2 <- simple_BL_emulator(xD2_h, fD2, xP_h, theta=0.3, sig=1, nugget=1e-3, mu=0)
+exp2 <- BL_em2[["ExpD_f(x)"]]
+var2 <- BL_em2[["VarD_f(x)"]]
+
+exp2_mat <- matrix(exp2, nrow=n_seq, ncol=n_seq)
+var2_mat <- matrix(var2, nrow=n_seq, ncol=n_seq)
+sd2_mat <- sqrt(abs(var2_mat))  # absolute taken for stability
+
+# Emulator expectation plot
+pdf(file="figures/disc1-stat-torn-embed.pdf", width=7, height=6)
+par(mar=c(4,4,2,4))
+  filled.contour(x=x_seq, y=x_seq, z=exp2_mat, color.palette=surf_cols, level=seq(-1, 1, 0.1),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   contour(x_seq, x_seq, exp2_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+
+# Emulator sd plot
+  filled.contour(x=x_seq, y=x_seq, z=sd2_mat, color.palette=var_cols, levels=seq(0,1,0.1),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+
+
+# Use a more extreme embedding surface to highlight warped surfaces
+v_extreme <- function(X){
+  if (is.matrix(X)) {
+    x <- X[,1]; y <- X[,2]
+  } else {
+    x <- X[1]; y <- X[2]
+  }
+  3*(y < 0.5)*(y - 0.5)^2 * (2*(x < 0.5) - 1)
+}
+
+V_extreme <- function(X) cbind(X, v_extreme(X))
+
+xP_h <- V_extreme(xP)
+xD2_h <- V_extreme(xD2)
+
+
+# Torn Embedding Stationary Emulation
+BL_em3 <- simple_BL_emulator(xD2_h, fD2, xP_h, theta=0.3, sig=1, nugget=1e-3, mu=0)
+exp3 <- BL_em3[["ExpD_f(x)"]]
+var3 <- BL_em3[["VarD_f(x)"]]
+
+exp3_mat <- matrix(exp3, nrow=n_seq, ncol=n_seq)
+var3_mat <- matrix(var3, nrow=n_seq, ncol=n_seq)
+sd3_mat <- sqrt(abs(var3_mat))  # absolute taken for stability
+
+# Emulator expectation plot
+  filled.contour(x=x_seq, y=x_seq, z=exp3_mat, color.palette=surf_cols, level=seq(-1, 1, 0.1),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   contour(x_seq, x_seq, exp3_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+
+# Emulator sd plot
+  filled.contour(x=x_seq, y=x_seq, z=sd3_mat, color.palette=var_cols, levels=seq(0,1,0.1),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+dev.off()
+
