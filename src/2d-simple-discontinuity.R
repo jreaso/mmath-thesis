@@ -290,3 +290,82 @@ sd3_mat <- sqrt(abs(var3_mat))  # absolute taken for stability
                  })
 dev.off()
 
+
+
+### ===================================
+### TENSE
+### ===================================
+
+# Work with v_extreme embedding surface
+
+v_deriv <- function(X){
+  if (is.matrix(X)) {
+    x <- X[,1]; y <- X[,2]
+  } else {
+    x <- X[1]; y <- X[2]
+  }
+  x_deriv <- 0
+  y_deriv <- 6*(y < 0.5)*(y - 0.5) * (2*(x < 0.5) - 1)
+  
+  return(c(x_deriv, y_deriv))
+}
+
+
+Sigma_real <- function(X, theta=0.3, alpha_3=0.25) {
+  v_d <- v_deriv(X)
+  v_x <- v_d[1]; v_y <- v_d[2]
+  w_3 <- c(-v_x, -v_y, 1)
+  r2 <- v_x^2 + v_y^2
+  return(										
+    theta^2 * matrix(c(  1,   0,   v_x,
+                         0,   1,   v_y,
+                         v_x, v_y,    r2), nrow=3, ncol=3, byrow=TRUE) + alpha_3^2 / (r2+1) * w_3 %*% t(w_3)
+  )
+}
+
+### TENSE NS CS
+Q 	  <- function(x, y, Sigma=Sigma_real) (x-y) %*% solve( (Sigma(x) + Sigma(y))/2 ) %*% (x-y)  # Quadratic Form
+k_S   <- function(d, sig=1) sig^2*exp(-d^2)  # squared exponential covariance function
+k_NS  <- function(x, y, sig=1, Sigma) {  # non-stationary covariance function
+  p <- length(x)
+  2^(p/2) * det(Sigma(x))^(1/4) * det(Sigma(y))^(1/4) / det(Sigma(x)+Sigma(y))^(1/2) * k_S(d=sqrt(Q(x,y)), sig=sig)
+  
+}
+
+
+source("src/lib/simple_NS_emulator.R")
+
+
+
+#####========================================
+### TENSE NS Emulation
+#####========================================
+
+NS_em4 <- simple_NS_emulator(xD2_h, fD2, xP_h, sig=1, nugget=1e-3, mu=0, Sigma=Sigma_real, just_var=TRUE)
+exp4 <- NS_em4[["ExpD_f(x)"]]
+var4 <- NS_em4[["VarD_f(x)"]]
+
+exp4_mat <- matrix(exp4, nrow=n_seq, ncol=n_seq)
+var4_mat <- matrix(var4, nrow=n_seq, ncol=n_seq)
+sd4_mat <- sqrt(abs(var4_mat))
+
+# Emulator expectation plot
+pdf(file="figures/disc1-TENSE-2d.pdf", width=7, height=6)
+par(mar=c(4,4,2,4))
+  filled.contour(x=x_seq, y=x_seq, z=exp4_mat, color.palette=surf_cols, level=seq(-1, 1, 0.1),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   contour(x_seq, x_seq, exp4_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+
+# Emulator sd plot
+filled.contour(x=x_seq, y=x_seq, z=sd4_mat, color.palette=var_cols, levels=seq(0,1,0.1),
+               xlab=axis_labels[1], ylab=axis_labels[2],
+               plot.axes={axis(1);axis(2)
+                 discontinuity_plot()
+                 points_plot(xD2)
+               })
+dev.off()
+
