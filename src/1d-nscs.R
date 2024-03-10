@@ -26,7 +26,7 @@ plot_gp <- function(xP, f, samples=NULL, ylim=NULL){
 
 ### PRIOR PLOT
 
-# Simple Non-Stationary Squared Exponential Kernel
+# Gibbs' Simple Non-Stationary Squared Exponential Kernel
 theta <- function(x) {
   0.2 - exp(-200*(x-0.5)^2) * 3/16
 }
@@ -45,7 +45,7 @@ set.seed(4)
 n_samples <- 3
 prior_samples <- rmvnorm(n=n_samples, mean=gp_exp_prior, sigma=gp_var_prior_mat)
 
-pdf(file="figures/1d-simple-nscs.pdf", width=6, height=5)
+pdf(file="figures/1d-simple-nscs.pdf", width=6, height=4)
   par(mar = c(4, 4, 2, 2))
   plot_gp(f=theta(xP), xP=xP, ylim=c(0, 0.23))
   title(ylab=expression(theta(x)), xlab="x", line=2.5, cex.lab=1)
