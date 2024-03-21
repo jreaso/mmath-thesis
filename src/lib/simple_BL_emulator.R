@@ -9,11 +9,16 @@ simple_BL_emulator <- function(xD, D, xP, theta=1, sig=1, nugget=1e-3, mu=0, jus
   
   Cmat <- function(dist_mat) sig^2 * exp(-(dist_mat)^2) * (1+nugget)
   
-  E_D <- rep(mu, n)
+  if(is.function(mu)){
+    E_D <- sapply(xD, mu)
+    E_B <- sapply(xP, mu)
+  } else {
+    E_D <- rep(mu, n)
+    E_B <- rep(mu, nP)
+  }
   
   Var_D <- Cmat(as.matrix(dist(xD)))
   Var_D <- Var_D + nugget*diag(nrow(Var_D)) # for stability
-  E_B <- rep(mu, nP)
   Cov_BD <- Cmat(as.matrix(pdist(xP, xD)))
   Var_D_inv <- chol2inv(chol(Var_D))
   
