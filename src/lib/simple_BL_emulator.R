@@ -5,17 +5,18 @@ library(pdist)
 
 simple_BL_emulator <- function(xD, D, xP, theta=1, sig=1, nugget=1e-3, mu=0, just_var=TRUE){
   n <- length(D); nP <- nrow(xP)
-  xD <- t(t(xD)/theta); xP <- t(t(xP)/theta)
   
   Cmat <- function(dist_mat) sig^2 * exp(-(dist_mat)^2) * (1+nugget)
   
   if(is.function(mu)){
-    E_D <- sapply(xD, mu)
-    E_B <- sapply(xP, mu)
+    E_D <- mapply(mu, xD)
+    E_B <- mapply(mu, xP)
   } else {
     E_D <- rep(mu, n)
     E_B <- rep(mu, nP)
   }
+  
+  xD <- t(t(xD)/theta); xP <- t(t(xP)/theta)
   
   Var_D <- Cmat(as.matrix(dist(xD)))
   Var_D <- Var_D + nugget*diag(nrow(Var_D)) # for stability
