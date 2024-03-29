@@ -212,6 +212,9 @@ xP <- as.matrix(expand.grid(x_seq, x_seq))
 x_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=FALSE)
 y_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=TRUE)
 
+fP <- f(xP)
+fP_mat <- matrix(fP, nrow=n_seq, ncol=n_seq)
+
 
 # Embed in Higher Dimension
 xP_h <- V(xP)
@@ -271,6 +274,7 @@ var3 <- BL_em3[["VarD_f(x)"]]
 exp3_mat <- matrix(exp3, nrow=n_seq, ncol=n_seq)
 var3_mat <- matrix(var3, nrow=n_seq, ncol=n_seq)
 sd3_mat <- sqrt(abs(var3_mat))  # absolute taken for stability
+diag3_mat <- (exp3_mat - fP_mat)/sd3_mat
 
 # Emulator expectation plot
   filled.contour(x=x_seq, y=x_seq, z=exp3_mat, color.palette=surf_cols, level=seq(-1, 1, 0.1),
@@ -285,6 +289,14 @@ sd3_mat <- sqrt(abs(var3_mat))  # absolute taken for stability
   filled.contour(x=x_seq, y=x_seq, z=sd3_mat, color.palette=var_cols, levels=seq(0,1,0.1),
                  xlab=axis_labels[1], ylab=axis_labels[2],
                  plot.axes={axis(1);axis(2)
+                   discontinuity_plot()
+                   points_plot(xD2)
+                 })
+# Emulator Diagnostics
+  filled.contour(x=x_seq, y=x_seq, z=diag3_mat, color.palette=diag_cols, levels=seq(-3,3,0.25),
+                 xlab=axis_labels[1], ylab=axis_labels[2],
+                 plot.axes={axis(1);axis(2)
+                   contour(x_seq, x_seq, diag3_mat, add=TRUE, level=seq(-3,3,0.25), lwd=0.4, drawlabels=FALSE)
                    discontinuity_plot()
                    points_plot(xD2)
                  })
@@ -348,6 +360,7 @@ var4 <- NS_em4[["VarD_f(x)"]]
 exp4_mat <- matrix(exp4, nrow=n_seq, ncol=n_seq)
 var4_mat <- matrix(var4, nrow=n_seq, ncol=n_seq)
 sd4_mat <- sqrt(abs(var4_mat))
+diag4_mat <- (exp4_mat - fP_mat)/sd4_mat
 
 # Emulator expectation plot
 pdf(file="figures/disc1-TENSE-2d.pdf", width=7, height=6)
@@ -364,6 +377,15 @@ par(mar=c(4,4,2,4))
 filled.contour(x=x_seq, y=x_seq, z=sd4_mat, color.palette=var_cols, levels=seq(0,1,0.1),
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
+                 discontinuity_plot()
+                 points_plot(xD2)
+               })
+
+# Emulator Diagnostics
+filled.contour(x=x_seq, y=x_seq, z=diag4_mat, color.palette=diag_cols, levels=seq(-3,3,0.25),
+               xlab=axis_labels[1], ylab=axis_labels[2],
+               plot.axes={axis(1);axis(2)
+                 contour(x_seq, x_seq, diag4_mat, add=TRUE, level=seq(-3,3,0.25), lwd=0.4, drawlabels=FALSE)
                  discontinuity_plot()
                  points_plot(xD2)
                })
