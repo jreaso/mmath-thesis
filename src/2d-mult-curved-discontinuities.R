@@ -35,10 +35,10 @@ v <- function(X){
   
   A1 <- 0.2*exp((x-0.8)^2) - 0.85
   A2 <- 0.2*exp((-x-0.8)^2) - 0.85
-  x0 <- 0.50566
+  x0 <- -0.50566
   
-  v1 <- -(y < 0.25)*(y < A1)*( 0.5*(x > -x0)*(x + x0)^2 + (y - 0.25)^2 )
-  v2 <- (y > -0.25)*(y > -A2)*( 0.5*(x < x0)*(x - x0)^2 + (y + 0.25)^2 )
+  v1 <- -(y < 0.25)*(y < A1)*( 0.5*(x > x0)*(x - x0)^2 + (y - 0.25)^2 )
+  v2 <- (y > -0.25)*(y > -A2)*( 0.5*(x < -x0)*(x + x0)^2 + (y + 0.25)^2 )
   
   return(v1 + v2)
 }
@@ -88,13 +88,14 @@ f <- function(X){
   V <- v(X)
   A <- V*sin(x*y - 4)^2 *y + 5*(sqrt(cos(x^2 - y^2)) - 1.1)
   E <- exp(-5*((x+0.5)^2 + (y+0.3)^2))*(2*(y < (0.2*exp((x-0.8)^2) - 0.85)) - 1)*(y-0.25)*(y<0.25)
+  B <- tanh(10*exp(-3*(x^4 + y^4)))
   
-  return(2*tanh(abs(A + 0.8)) - 0.8 + E)
+  return((2*tanh(abs(A + 0.8)) - 0.8 + E)*B)
 }
 
 
 
-n_seq <- 101
+n_seq <- 501
 x_seq <- seq(-1,1, len=n_seq)
 xP <- as.matrix(expand.grid(x_seq, x_seq))
 
@@ -110,7 +111,7 @@ par(mar=c(4,4,2,4))
 filled.contour(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-1.5, 1.5, 0.1),
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, fP_mat, add=TRUE, level=seq(-1, 1, 0.1), lwd=0.4, drawlabels=FALSE)
+                 contour(x_seq, x_seq, fP_mat, add=TRUE, level=seq(-1.5, 1.5, 0.1), lwd=0.4, drawlabels=FALSE)
                  discontinuity_plot(lwd=5)
                })
 dev.off()
@@ -146,7 +147,7 @@ xD_seq <- seq(-1+1/nD_seq, 1-1/nD_seq, len=nD_seq)
 xD <- as.matrix(expand.grid(xD_seq, xD_seq))
 fD <- f(xD)
 
-n_seq <- 501; x_seq <- seq(-1,1, len=n_seq) # may be slow to run emulator and can decrease this to 101
+n_seq <- 201; x_seq <- seq(-1,1, len=n_seq) # may be slow to run emulator and can decrease this to 101
 xP <- as.matrix(expand.grid(x_seq, x_seq))
 x_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=FALSE)
 y_mat <- matrix(x_seq, nrow=n_seq, ncol=n_seq, byrow=TRUE)
