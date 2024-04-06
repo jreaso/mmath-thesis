@@ -3,8 +3,9 @@ library(viridisLite)
 # Robot Arm Function `robot`
 source("src/models/robot.R")
 
-# Simple BL Emulator
+# Simple and Periodic BL Emulator
 source("src/lib/simple_BL_emulator.R")
+source("src/lib/periodic_BL_emulator.R")
 
 # Maximin LHD (2D)
 #source("src/lib/maximin_lhd_2d.R")
@@ -42,7 +43,7 @@ fP_mat <- matrix(fP, nrow=ntheta, ncol=ntheta)
 tick_vals <- c(0, pi/2, pi, 3*pi/2, 2*pi)
 tick_labs <- expression(0, pi/2, pi, 3*pi/2, 2*pi)
 
-pdf(file="figures/2d-robot-arm-naive.pdf", width=7, height=6)
+pdf(file="figures/2d-robot-arm.pdf", width=7, height=6)
 ### True Function
 filled.contour(x=theta_seq, y=theta_seq, z=fP_mat, color.palette=surf_cols, levels=seq(0, 3, 0.2),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
@@ -75,22 +76,68 @@ var_mat <- abs(matrix(BL_em[["VarD_f(x)"]], nrow=ntheta, ncol=ntheta))  # abs ta
 points_plot <- function(xD, col="black", cex=1.5, pch=20, ...) points(xD, col=col, cex=cex, pch=pch, ...)
 
 # Emulator expectation plot
-filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.2),
+filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.25),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
                plot.axes={
                  axis(1, at=tick_vals, labels=tick_labs, las=1)
                  axis(2, at=tick_vals, labels=tick_labs, las=1)
-                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(0, 3, 0.2),
+                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(0, 3, 0.25),
                          lwd=0.4, drawlabels=FALSE)
                  points_plot(xD)
                })
 
-filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.2),
+filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.25),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
                plot.axes={
                  axis(1, at=tick_vals, labels=tick_labs, las=1)
                  axis(2, at=tick_vals, labels=tick_labs, las=1)
-                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(0, 3, 0.2),
+                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(0, 3, 0.25),
+                         lwd=0.4, drawlabels=FALSE)
+               })
+
+# Emulator sd plot
+filled.contour(x=theta_seq, y=theta_seq, z=sqrt(var_mat), color.palette=var_cols, levels=seq(0, 1, 0.1),
+               xlab=expression(theta[2]), ylab=expression(theta[4]),
+               plot.axes={
+                 axis(1, at=tick_vals, labels=tick_labs, las=1)
+                 axis(2, at=tick_vals, labels=tick_labs, las=1)
+                 points_plot(xD)
+               })
+
+# Emulator diagnostics plot
+diag_mat <- (exp_mat - fP_mat) / sqrt(var_mat)
+filled.contour(x=theta_seq, y=theta_seq, z=diag_mat, color.palette=diag_cols, levels=seq(-3,3,0.25),
+               xlab=expression(theta[2]), ylab=expression(theta[4]),
+               plot.axes={axis(1);axis(2)
+                 contour(theta_seq, theta_seq, diag_mat, add=TRUE, level=seq(-3, 3, 0.25),
+                         lwd=0.4, drawlabels=FALSE)
+                 points_plot(xD)
+               })
+
+
+
+### Using periodic covariance function
+periodic_BL_em <- periodic_BL_emulator(xD=xD, D=fD, xP=xP, theta=2, p=2*pi, sig=2, mu=1.5)
+exp_mat <- matrix(periodic_BL_em[["ExpD_f(x)"]], nrow=ntheta, ncol=ntheta)
+var_mat <- abs(matrix(periodic_BL_em[["VarD_f(x)"]], nrow=ntheta, ncol=ntheta))  # abs taken to correct for numerical instability
+
+# Emulator expectation plot
+filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.25),
+               xlab=expression(theta[2]), ylab=expression(theta[4]),
+               plot.axes={
+                 axis(1, at=tick_vals, labels=tick_labs, las=1)
+                 axis(2, at=tick_vals, labels=tick_labs, las=1)
+                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(-0.5, 3.75, 0.25),
+                         lwd=0.4, drawlabels=FALSE)
+                 points_plot(xD)
+               })
+
+filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, levels=seq(0, 3, 0.25),
+               xlab=expression(theta[2]), ylab=expression(theta[4]),
+               plot.axes={
+                 axis(1, at=tick_vals, labels=tick_labs, las=1)
+                 axis(2, at=tick_vals, labels=tick_labs, las=1)
+                 contour(theta_seq, theta_seq, exp_mat, add=TRUE, level=seq(0, 3, 0.25),
                          lwd=0.4, drawlabels=FALSE)
                })
 
@@ -113,6 +160,19 @@ filled.contour(x=theta_seq, y=theta_seq, z=diag_mat, color.palette=diag_cols, le
                  points_plot(xD)
                })
 dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
