@@ -195,12 +195,12 @@ tick_labs <- expression(0, 2*pi)
 
 ### True function with extended ranges
 pdf(file="figures/2d-robot-arm-periodicity.pdf", width=7, height=6)
-filled.contour(x=theta_seq, y=theta_seq, z=fP_mat, color.palette=surf_cols, levels=seq(0, 2.8, 0.2),
+filled.contour(x=theta_seq, y=theta_seq, z=fP_mat, color.palette=surf_cols, levels=seq(0, 3, 0.25),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
                plot.axes={
                  axis(1, at=tick_vals, labels=tick_labs, las=1)
                  axis(2, at=tick_vals, labels=tick_labs, las=1)
-                 contour(theta_seq, theta_seq, fP_mat, add=TRUE, level=seq(0, 2.8, 0.2),
+                 contour(theta_seq, theta_seq, fP_mat, add=TRUE, level=seq(0, 3, 0.25),
                          lwd=0.4, drawlabels=FALSE)
                  lines(c(0, 0),        c(-2*pi, 4*pi), lwd=2)
                  lines(c(2*pi, 2*pi),  c(-2*pi, 4*pi), lwd=2)
