@@ -59,7 +59,7 @@ filled.contour(x=theta_seq, y=theta_seq, z=fP_mat, color.palette=surf_cols, leve
 #set.seed(6)
 #xD <- maximin_lhd_2d(20, perturb=F)*2*pi
 nD_seq <- 5
-tD_seq <- seq(pi/nD_seq, 2*pi - pi/nD_seq, l=nD_seq)
+tD_seq <- seq(pi/(2*nD_seq), 2*pi - pi/(2*nD_seq), l=nD_seq)
 xD <- expand.grid(tD_seq, tD_seq)
 nD <- nrow(xD)
 xD_all <- cbind(rep(0, nD), xD[, 1], rep(pi/6, nD), xD[, 2],
@@ -95,8 +95,8 @@ filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, lev
                          lwd=0.4, drawlabels=FALSE)
                })
 
-# Emulator sd plot
-filled.contour(x=theta_seq, y=theta_seq, z=sqrt(var_mat), color.palette=var_cols, levels=seq(0, 1, 0.1),
+# Emulator var plot
+filled.contour(x=theta_seq, y=theta_seq, z=var_mat, color.palette=var_cols, levels=seq(0, 0.3, 0.025),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
                plot.axes={
                  axis(1, at=tick_vals, labels=tick_labs, las=1)
@@ -141,8 +141,8 @@ filled.contour(x=theta_seq, y=theta_seq, z=exp_mat, color.palette=surf_cols, lev
                          lwd=0.4, drawlabels=FALSE)
                })
 
-# Emulator sd plot
-filled.contour(x=theta_seq, y=theta_seq, z=sqrt(var_mat), color.palette=var_cols, levels=seq(0, 1, 0.1),
+# Emulator var plot
+filled.contour(x=theta_seq, y=theta_seq, z=var_mat, color.palette=var_cols, levels=seq(0, 0.3, 0.025),
                xlab=expression(theta[2]), ylab=expression(theta[4]),
                plot.axes={
                  axis(1, at=tick_vals, labels=tick_labs, las=1)
