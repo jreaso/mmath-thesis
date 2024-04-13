@@ -40,7 +40,7 @@ plot_design(X_Mm1)
 #X_Mm2 <- FastMmLHD(n=16, k=2)/16 - 1/32
 #plot_design(X_Mm2)
 
-#X_Mm3 <- maximinLHS(n=16, k=2, method="iterative", maxIter=1000, eps=1e-10, optimize.on="result", debug=T)
+#X_Mm3 <- maximinLHS(n=16, k=2, method="iterative", dup=2, maxIter=1000, eps=1e-12, optimize.on="result", debug=T)
 #plot_design(X_Mm3)
   
 
