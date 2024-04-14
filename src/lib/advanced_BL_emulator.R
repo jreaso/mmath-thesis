@@ -1,7 +1,7 @@
 ### Advanced Bayes Linear Emulator - Uses Regression Surface
 # uses isotropic squared exponential covariance structure
 
-# not yet implemented just calculating diagonal of variance matrix
+# not yet fully implemented, just calculating diagonal of variance matrix
 
 library(pdist)
 
