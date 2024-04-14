@@ -33,7 +33,8 @@ Q <- function(x, y, Mx, My) {
 }
 
 
-# Non-Stationary TENSE Covariance Function
+### Non-Stationary TENSE Covariance Function
+# Fastest implementation for computing variance matrix
 k_NS <- function(VX, vdX, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   n <- nrow(VX)
   N <- ncol(VX) - 1
@@ -55,6 +56,26 @@ k_NS <- function(VX, vdX, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   
   Cmat <- outer(1:n, 1:n, Vectorize(k_NS_func))
   Cmat[lower.tri(Cmat)] <- t(Cmat)[lower.tri(Cmat)] # copy across diagonal
+  
+  return(sigma^2 * Cmat)
+}
+
+# modification of k_NS but for efficiently computing covariance matrices
+k_NS2 <- function(VX1, VX2, vdX1, vdX2, k_S=k_S, theta=1, lambda2=1, sigma=1) {
+  n1 <- nrow(VX1); n2 <- nrow(VX2)
+  N <- ncol(VX1) - 1
+  
+  Sigma_V_list1 <- Sigma_V(vdX1, theta=theta, lambda2=lambda2)
+  Sigma_V_list2 <- Sigma_V(vdX2, theta=theta, lambda2=lambda2)
+  
+  k_NS_func <- function(i, j) {
+    xi <- VX1[i,]; xj <- VX2[j,]
+    Sigma_Vi <- Sigma_V_list1[[i]]; Sigma_Vj <- Sigma_V_list2[[j]]
+    Qij <- Q(xi, xj, Sigma_Vi, Sigma_Vj)
+    return(2^(N/2) * det(Sigma_Vi)^(1/4) * det(Sigma_Vj)^(1/4) / det(Sigma_Vi + Sigma_Vj)^(1/2) * k_S(d=sqrt(Qij)))
+  }
+  
+  Cmat <- outer(1:n1, 1:n2, Vectorize(k_NS_func))
   
   return(sigma^2 * Cmat)
 }
