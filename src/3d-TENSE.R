@@ -1,6 +1,8 @@
 library(viridisLite)
 library(plotly)
+
 source("src/lib/filled.contour3.R")
+source("src/lib/TENSE.R")
 
 ###====================================
 ### Embedding Surface
@@ -21,6 +23,7 @@ v <- function(X){
   return(A*B)
 }
 
+# Embedding function
 V <- function(X) cbind(X, v(X))
 
 
@@ -32,6 +35,7 @@ n_seq <- 201
 x_seq <- seq(0,1, l=n_seq);
 x2_grid <- as.matrix(expand.grid(x_seq, x_seq))
 
+#pdf(file="figures/T3D-....pdf", width=7, height=6)
 xP1 <- cbind(x2_grid[,1], 0.25, x2_grid[,2]); vP1 <- v(xP1)
 vP1_mat <- matrix(vP1, nrow=n_seq, ncol=n_seq)
 par(mar=c(4,4,2,2))
@@ -64,7 +68,7 @@ filled.contour3(x=x_seq, y=x_seq, z=vP5_mat, color.palette=magma, levels=seq(-1,
                 plot.axes={axis(1);axis(2)
                   lines(c(0.5, 0.5), c(0, 0.533), type="l", lwd=3)
                 })
-
+#dev.off()
 
 
 
@@ -248,7 +252,7 @@ xD <- matrix(c(0, 31, 4,
 fD <- f(xD)
 
 
-plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = fD, type = "scatter3d", mode = "markers")
+#plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = fD, type = "scatter3d", mode = "markers")
 
 
 
@@ -275,19 +279,32 @@ v_deriv <- function(X){
   dx <- dxA*B
   dy <- dyA*B
   dz <- dzA*B
-  return(list(dx, dy, dz))
+  return(mapply(c, dx, dy, dz, SIMPLIFY=F))
 }
 
 
 # Design points fD, vD and derivatives
-vD <- v(xD)
-vD_deriv <- v_deriv(xD)
+#vD <- v(xD)
+#vD_deriv <- do.call(rbind, v_deriv(xD))
 
-plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD, type = "scatter3d", mode = "markers")
-plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[[1]], type = "scatter3d", mode = "markers")
-plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[[2]], type = "scatter3d", mode = "markers")
-plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[[3]], type = "scatter3d", mode = "markers")
+#plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD, type = "scatter3d", mode = "markers")
+#plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[,1], type = "scatter3d", mode = "markers")
+#plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[,2], type = "scatter3d", mode = "markers")
+#plot_ly(x = xD[, 1], y = xD[, 2], z = xD[, 3], color = vD_deriv[,3], type = "scatter3d", mode = "markers")
 
+
+
+
+
+###====================================
+### TENSE
+###====================================
+
+#source("src/lib/TENSE.R")
+
+
+
+CmatD <- k_NS(VX=V(xD), vdX=v_deriv(xD), k_S=k_S, theta=0.3, lambda2=1, sigma=1)
 
 
 
