@@ -7,13 +7,13 @@ k_S <- function(d) exp(-d^2)
 
 # x-dependant covariance matrix governing general Mahalanobis distance to reverse warping
 Sigma_V <- function(vdX, theta=1, lambda2=1) {
-  N <- length(vdX[[1]])
+  N <- ncol(vdX)
   theta2 <- theta^2
   
   Sigma_V_func <- function(vd) {
     r2 <- sum(vd^2)
     if (r2 == 0){ # zero derivative so no scaling
-      Sigma_V <- theta2*diag(N+1)
+      Sigma_V <- diag(theta2, N+1)
       Sigma_V[N+1, N+1] <- lambda2
     } else {
       w_grad <- c(vd, r2)
@@ -23,7 +23,7 @@ Sigma_V <- function(vdX, theta=1, lambda2=1) {
     return(Sigma_V)
   }
   
-  return(lapply(vdX, Sigma_V_func))
+  return(lapply(1:nrow(vdX), function(i) Sigma_V_func(vdX[i, ])))
 }
 
 
@@ -35,6 +35,7 @@ Q <- function(x, y, Mx, My) {
 
 ### Non-Stationary TENSE Covariance Function
 # Fastest implementation for computing variance matrix
+# (not fast, just faster than k_NS2 for the variance matrix)
 k_NS <- function(VX, vdX, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   n <- nrow(VX)
   N <- ncol(VX) - 1
@@ -49,8 +50,8 @@ k_NS <- function(VX, vdX, k_S=k_S, theta=1, lambda2=1, sigma=1) {
     } else {
       xi <- VX[i,]; xj <- VX[j,]
       Sigma_Vi <- Sigma_V_list[[i]]; Sigma_Vj <- Sigma_V_list[[j]]
-      Qij <- Q(xi, xj, Sigma_Vi, Sigma_Vj)
-      return(2^(N/2) * det(Sigma_Vi)^(1/4) * det(Sigma_Vj)^(1/4) / det(Sigma_Vi + Sigma_Vj)^(1/2) * k_S(d=sqrt(Qij)))
+      Qij <- Q(x=xi, y=xj, Mx=Sigma_Vi, My=Sigma_Vj)
+      return(2^((N+1)/2) * det(Sigma_Vi)^(1/4) * det(Sigma_Vj)^(1/4) / det(Sigma_Vi + Sigma_Vj)^(1/2) * k_S(d=sqrt(Qij)))
     }
   }
   
@@ -60,7 +61,7 @@ k_NS <- function(VX, vdX, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   return(sigma^2 * Cmat)
 }
 
-# modification of k_NS but for efficiently computing covariance matrices
+# modification of k_NS but for efficiently computing COVARIANCE matrices
 k_NS2 <- function(VX1, VX2, vdX1, vdX2, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   n1 <- nrow(VX1); n2 <- nrow(VX2)
   N <- ncol(VX1) - 1
@@ -69,13 +70,14 @@ k_NS2 <- function(VX1, VX2, vdX1, vdX2, k_S=k_S, theta=1, lambda2=1, sigma=1) {
   Sigma_V_list2 <- Sigma_V(vdX2, theta=theta, lambda2=lambda2)
   
   k_NS_func <- function(i, j) {
-    xi <- VX1[i,]; xj <- VX2[j,]
-    Sigma_Vi <- Sigma_V_list1[[i]]; Sigma_Vj <- Sigma_V_list2[[j]]
-    Qij <- Q(xi, xj, Sigma_Vi, Sigma_Vj)
-    return(2^(N/2) * det(Sigma_Vi)^(1/4) * det(Sigma_Vj)^(1/4) / det(Sigma_Vi + Sigma_Vj)^(1/2) * k_S(d=sqrt(Qij)))
+    x1 <- VX1[i,]; x2 <- VX2[j,]
+    Sigma_V1 <- Sigma_V_list1[[i]]; Sigma_V2 <- Sigma_V_list2[[j]]
+    Qij <- Q(x1, x2, Sigma_V1, Sigma_V2)
+    return(2^((N+1)/2) * det(Sigma_V1)^(1/4) * det(Sigma_V2)^(1/4) / det(Sigma_V1 + Sigma_V2)^(1/2) * k_S(d=sqrt(Qij)))
   }
   
   Cmat <- outer(1:n1, 1:n2, Vectorize(k_NS_func))
   
   return(sigma^2 * Cmat)
 }
+
