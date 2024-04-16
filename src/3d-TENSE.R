@@ -158,7 +158,7 @@ for (i in 1:9){
   fP_mat <- matrix(fP, nrow=n_seq, ncol=n_seq)
   png(file=paste0("figures/TENSE-3D/f-", names[i], ".png"), type="cairo", width=2400, height=2400, res=600, bg="transparent")
   par(mar=c(4,4,2,2), mfrow=c(1,1))
-  filled.contour3(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-3.5, 3.5, 0.1),
+  filled.contour3(x=x_seq, y=x_seq, z=fP_mat, color.palette=surf_cols, levels=seq(-3.5, 3.5, 0.2),
                   xlab=xlabs[i], ylab=ylabs[i], #main=mains[i],
                   plot.axes={axis(1);axis(2)
                     if (!is.null(disc_plots[[i]])){
@@ -173,7 +173,7 @@ for (i in 1:9){
 # Legend
 png(file="figures/TENSE-3d/surf-legend.png", type="cairo", width=900, height=2400, res=600, bg="transparent")
 par(mar=c(4,0,2,2))
-colkey(col=surf_cols(70), side=4, clim=c(-3.5, 3.5), add=F, width=4)
+colkey(col=surf_cols(35), side=4, clim=c(-3.5, 3.5), add=F, width=4)
 dev.off()
 
 
@@ -187,8 +187,8 @@ dev.off()
 
 
 ### Design
-load("data/designs/Mm3_160.RData")
-xD <- Mm3_160/160 + 1/320
+load("data/designs/Mm3_80.RData")
+xD <- Mm3_80/80 + 1/160
 colnames(xD) <- c("x", "y", "z")
 
 fD <- f(xD)
@@ -256,7 +256,7 @@ for (i in 1:9){
   
   png(file=paste0("figures/TENSE-3D/exp-", names[i], ".png"), type="cairo", width=2400, height=2400, res=600, bg="transparent")
   par(mar=c(4,4,2,2), mfrow=c(1,1))
-  filled.contour3(x=x_seq, y=x_seq, z=exp_mat, color.palette=surf_cols, levels=seq(-3.5, 3.5, 0.1),
+  filled.contour3(x=x_seq, y=x_seq, z=exp_mat, color.palette=surf_cols, levels=seq(-3.5, 3.5, 0.2),
                   xlab=xlabs[i], ylab=ylabs[i], #main=mains[i],
                   plot.axes={axis(1);axis(2)
                     if (!is.null(disc_plots[[i]])){
@@ -272,13 +272,14 @@ for (i in 1:9){
   sd_mat <- sqrt(var_mat)
   
   png(file=paste0("figures/TENSE-3D/sd-", names[i], ".png"), type="cairo", width=2400, height=2400, res=600, bg="transparent")
+  par(mar=c(4,4,2,2), mfrow=c(1,1))
   filled.contour3(x=x_seq, y=x_seq, z=sd_mat, color.palette=var_cols, levels=seq(0, 1.5, 0.05),
                   xlab=xlabs[i], ylab=ylabs[i], #main=mains[i],
                   plot.axes={axis(1);axis(2)
                     if (!is.null(disc_plots[[i]])){
                       disc_plots[[i]]()
                     }
-                    #points(x=xD[, xlabs[i]], y=xD[, ylabs[i]], pch=21, bg=1, cex=pt_cexs[[i]])
+                    points(x=xD[, xlabs[i]], y=xD[, ylabs[i]], pch=21, bg=1, cex=pt_cexs[[i]])
                   })
   dev.off()
   
