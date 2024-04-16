@@ -1,6 +1,6 @@
-# Emulation on Unusual Input Spaces
+# Advances in Emulation and the TENSE Framework
 
-Associated code for dissertation on emulation over unusual input spaces.
+Supplementary code for MMATH thesis on _Advances in Emulation and the TENSE Framework_.
 
 Code is in `src`, the `lib` directory contains reusable code and functions:
 - `filled.contour3` - modification of `filled.contour` to remove legend.
