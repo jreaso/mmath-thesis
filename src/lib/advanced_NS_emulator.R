@@ -1,14 +1,12 @@
 source("src/lib/TENSE.R")
   
 ### Advanced NS Emulator
-# no nugget term yet and only computes variances, not variance matrix
-advanced_NS_emulator <- function(VxD, D, VxP, vdxD, vdxP, k_S=k_S, mu_beta, g, Sigma_beta, theta=1, lambda2=1, sigma=1){ #nugget=1e-3
+# no nugget term yet
+advanced_NS_emulator <- function(VxD, D, VxP, vdxD, vdxP, k_S=k_S, mu_beta, g, Sigma_beta, theta=1, lambda2=1, sigma=1, just_var=T){ #nugget=1e-3
   n <- length(D); nP <- nrow(xP)
-  xD <- t(t(xD)/theta); xP <- t(t(xP)/theta)
   
   # Compute covariance matrices
   OmegaD <- k_NS(VX=VxD, vdX=vdxD, k_S=k_S, theta=theta, lambda2=lambda2, sigma=sigma) # Var[xD]
-  OmegaP <- k_NS(VX=VxP, vdX=vdxP, k_S=k_S, theta=theta, lambda2=lambda2, sigma=sigma) # Var[xP]
   CovU_D_P <- k_NS2(VX1=VxD, VX2=VxP, vdX1=vdxD, vdX2=vdxP, k_S=k_S, theta=theta, lambda2=lambda2, sigma=sigma) # Cov[xD, xP]
   
   # Apply basis functions to points
@@ -29,7 +27,13 @@ advanced_NS_emulator <- function(VxD, D, VxP, vdxD, vdxP, k_S=k_S, mu_beta, g, S
   ED_U <- t(CovU_D_P) %*% OmegaD_inv %*% (D - GD %*% ED_beta)
   ED_B <- GP %*% ED_beta + ED_U
   
-  VarD_B <- OmegaP + Gtilde %*% VarD_beta %*% t(Gtilde) - t(CovU_D_P) %*% OmegaD_inv %*% CovU_D_P
+  if (!just_var){ # full variance matrix calculation
+    # only compute if we want whole variance matrix
+    OmegaP <- k_NS(VX=VxP, vdX=vdxP, k_S=k_S, theta=theta, lambda2=lambda2, sigma=sigma) # Var[xP]
+    VarD_B <- OmegaP + Gtilde %*% VarD_beta %*% t(Gtilde) - t(CovU_D_P) %*% OmegaD_inv %*% CovU_D_P
+  } else {
+    VarD_B <- rep(sigma^2, nP) + diag(Gtilde %*% VarD_beta %*% t(Gtilde)  - t(CovU_D_P) %*% OmegaD_inv %*% CovU_D_P)
+  }
   
   return(list("ED_fP"=ED_B, "VarD_fP"=VarD_B, "ED_beta"=ED_beta, "GP"=GP)) 
 }
