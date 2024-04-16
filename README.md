@@ -2,7 +2,9 @@
 
 Supplementary code for MMATH thesis on _Advances in Emulation and the TENSE Framework_.
 
-Code is organised in `/src` with reusable code and functions in the `/src/lib` sub-directory. All figures from the report along with additional ones can be found in the `/figures` directory and miscellaneous data files are stored in `/data`. We highlight the files `/src/lib/TENSE.R` and `/src/lib/simple_NS_emulator2.R` which implement the TENSE framework in arbitrary dimension.
+Code is organised in `/src` with reusable code and functions in the `/src/lib` sub-directory. All figures from the report along with additional ones can be found in the `/figures` directory and miscellaneous data files are stored in `/data`.
+
+We highlight the files `/src/lib/TENSE.R` and `/src/lib/simple_NS_emulator2.R` which implement the TENSE framework in arbitrary dimensions.
 
 
 ## Contents by Chapter
