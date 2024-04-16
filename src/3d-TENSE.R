@@ -1,5 +1,6 @@
 library(viridisLite)
 library(plotly)
+library(plot3D)
 
 source("src/lib/TENSE.R")
 source("src/lib/advanced_NS_emulator.R")
@@ -57,15 +58,18 @@ v_deriv <- function(X){
 ### Plotting Embedding Surface
 
 # Compact domain sigmoid plot
+pdf(file="figures/TENSE-3D/1d-sigmoidal.pdf", width=6, height=5)
+par(mar = c(4, 4, 2, 2))
 plot(seq(-0.5, 1.5, l=100), s(seq(-0.5, 1.5, l=100)), type="l", xlab="d", ylab="s(d)", xlim=c(-0.1,1.1))
+dev.off()
 
 
-n_seq <- 201
+n_seq <- 101
 x_seq <- seq(0,1, l=n_seq);
 x_grid <- as.matrix(expand.grid(x_seq, x_seq))
 
 # Slice (a)
-xP <- cbind(x_grid[,1], 0.8, x2_grid[,2])
+xP <- cbind(x_grid[,1], 0.8, x_grid[,2])
 vP <- v(xP); vP_mat <- matrix(vP, nrow=n_seq, ncol=n_seq)
 png(file="figures/TENSE-3d/v-a.png", type="cairo", width=2400, height=2400, res=600, bg="transparent")
 par(mar=c(4,4,2,2))
@@ -73,7 +77,7 @@ filled.contour3(x=x_seq, y=x_seq, z=vP_mat, color.palette=magma, levels=seq(-1, 
 dev.off()
 
 # Slice (b)
-xP <- cbind(x_grid[,1], 0.2, x2_grid[,2])
+xP <- cbind(x_grid[,1], 0.2, x_grid[,2])
 vP <- v(xP); vP_mat <- matrix(vP, nrow=n_seq, ncol=n_seq)
 png(file="figures/TENSE-3d/v-b.png", type="cairo", width=2400, height=2400, res=600, bg="transparent")
 par(mar=c(4,4,2,2))
@@ -81,7 +85,7 @@ filled.contour3(x=x_seq, y=x_seq, z=vP_mat, color.palette=magma, levels=seq(-1, 
 dev.off()
 
 # Slice (c)
-xP <- cbind(0.5, x2_grid)
+xP <- cbind(0.5, x_grid)
 vP <- v(xP); vP_mat <- matrix(vP, nrow=n_seq, ncol=n_seq)
 png(file="figures/TENSE-3d/v-c.png", type="cairo", width=2400, height=2400, res=600, bg="transparent")
 par(mar=c(4,4,2,2))
@@ -196,7 +200,8 @@ pt_cexs <- list(1-abs(xD[,2]), 1-abs(xD[,2]-1),
                 1-abs(xD[,1]-0.5))
 
 
-#Optionally use smaller grid for emulation
+# Optionally use smaller grid for emulation
+# WARNING: Emulation takes a while with a large grid size 
 #n_seq <- 21
 #x_grid <- as.matrix(expand.grid(x_seq, x_seq))
 #x_seq <- seq(0,1, l=n_seq);
@@ -234,7 +239,11 @@ for (i in 1:9){
 
 
 ### Regression Coefficients
-em_out_list[[1]][["ED_beta"]]
+reg_coefs <- as.vector(em_out_list[[1]][["ED_beta"]])
+quants <- c("1", "x", "y", "z", "x^2", "y^2", "z^2", "xz")
+for (j in 1:8) {
+  print(paste0(quants[j], ": ", round(reg_coefs[j], 3)))
+}
 
 
 ### Emulator Plots
