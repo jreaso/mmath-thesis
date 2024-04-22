@@ -63,4 +63,7 @@ We highlight the files `/src/lib/TENSE.R` and `/src/lib/simple_NS_emulator2.R` w
 
 ---
 
-**Package Dependencied:** `LHD`, `lhs`, `pdist`, `plot3D`, `plotly`, `SimDesign`, `viridisLite`.
+**R Package Dependencies:** `LHD`, `lhs`, `pdist`, `plot3D`, `plotly`, `SimDesign`, `viridisLite`.
+
+
+
