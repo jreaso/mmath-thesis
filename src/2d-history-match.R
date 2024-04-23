@@ -49,7 +49,7 @@ Imp_true_mat <- sqrt( (fP_mat - z)^2 / (sigma_e^2 + sigma_epsilon^2) )
 filled.contour(x=x_seq, y=x_seq, z=Imp_true_mat, color.palette=imp_cols, levels=imp_levs,
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, Imp_true_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
+                 #contour(x_seq, x_seq, Imp_true_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
                  contour(x_seq, x_seq, Imp_true_mat, add=TRUE, level=c(3), lwd=2, drawlabels=T)
                })
 
@@ -113,7 +113,7 @@ Imp1_mat <- sqrt((exp1_mat - z)^2 / (var1_mat + sigma_e^2 + sigma_epsilon^2))
 filled.contour(x=x_seq, y=x_seq, z=Imp1_mat, color.palette=imp_cols, levels=imp_levs,
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, Imp1_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
+                 #contour(x_seq, x_seq, Imp1_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
                  contour(x_seq, x_seq, Imp1_mat, add=TRUE, level=c(3), lwd=2, drawlabels=T)
                  points_plot(xD_w1, bg="white")
                  points_plot(xD_w1, col="black", pch=20, cex=1)
@@ -186,7 +186,7 @@ Imp2_mat <- sqrt((exp2_mat - z)^2 / (var2_mat + sigma_e^2 + sigma_epsilon^2))
 filled.contour(x=x_seq, y=x_seq, z=Imp2_mat, color.palette=imp_cols, levels=imp_levs,
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, Imp2_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
+                 #contour(x_seq, x_seq, Imp2_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
                  contour(x_seq, x_seq, Imp2_mat, add=TRUE, level=c(3), lwd=2, drawlabels=T)
                  points_plot(xD_w2_full, bg="white")
                  points_plot(xD_w2, col="black", pch=20, cex=1)
@@ -259,7 +259,7 @@ Imp3_mat <- sqrt((exp3_mat - z)^2 / (var3_mat + sigma_e^2 + sigma_epsilon^2))
 filled.contour(x=x_seq, y=x_seq, z=Imp3_mat, color.palette=imp_cols, levels=imp_levs,
                xlab=axis_labels[1], ylab=axis_labels[2],
                plot.axes={axis(1);axis(2)
-                 contour(x_seq, x_seq, Imp3_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
+                 #contour(x_seq, x_seq, Imp3_mat, add=TRUE, level=imp_levs, lwd=0.4, drawlabels=FALSE)
                  contour(x_seq, x_seq, Imp3_mat, add=TRUE, level=c(3), lwd=2, drawlabels=T)
                  points_plot(xD_w3_full, bg="white")
                  points_plot(xD_w3, col="black", pch=20, cex=1)
@@ -276,3 +276,4 @@ xD_base_w3 <- xD_base[imp_base <= 3, ]
 
 
 dev.off()
+
